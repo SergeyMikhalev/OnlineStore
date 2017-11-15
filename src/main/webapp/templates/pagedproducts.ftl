@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Таблица товаров</title>
     <#include "parts/part_links.ftl">
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
 </head>
 <body>
 <div class="container">
@@ -17,13 +18,13 @@
         <table class="table table-bordered table-row-cell table-hover" >
 
             <thead>
-                <th colspan="3"> Товары в наличии </th>
+                <th colspan="4"> Товары в наличии </th>
             </thead>
 
             <tbody>
             <#list products.iterator() as product>
-                <tr onclick="window.location.href='/singleproduct?prodId=${product.getId()}'; return false">
-                    <td> ${product.getName()} </td>
+                <tr >
+                    <td onclick="window.location.href='/singleproduct?prodId=${product.getId()}'; return false"> ${product.getName()} </td>
                     <td> ${product.getCost()} </td>
                     <td>
                         <#if !product.getImgPath()??>
@@ -32,6 +33,7 @@
                             <img src="${product.getImgPath()}">
                         </#if>
                     </td>
+                    <td> <button class="btn btn-dark"  onclick="addCurrentProductToCart(${product.getId()})"> Добавить в корзину </button> </td>
                 </tr>
             </#list>
             </tbody>
@@ -51,6 +53,23 @@
         </div>
     </div>
 
+    <script type="text/javascript">
+        function addCurrentProductToCart(prod_id){
+
+            alert("Добавление товара в корзину")
+            $.ajax({
+                type: "POST",
+                url: "cart",
+                data: JSON.stringify({ command: 1, prodId: prod_id, count: 1 }),
+                contentType: 'application/json',
+                success: null
+            });
+        }
+    </script>
+
 </div>
+
+
+
 </body>
 </html>

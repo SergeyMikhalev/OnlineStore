@@ -1,7 +1,8 @@
-package OnlineStore.Services;
+package OnlineStore.Services.Implementations;
 
 import OnlineStore.Entities.Product;
 import OnlineStore.Repositories.ProductRepository;
+import OnlineStore.Services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

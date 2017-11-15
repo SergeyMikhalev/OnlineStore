@@ -102,4 +102,18 @@ public class Product implements Serializable{
     }
 
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Product)) return false;
+
+        Product product = (Product) o;
+
+        return id == product.id;
+    }
+
+    @Override
+    public int hashCode() {
+        return id;
+    }
 }
