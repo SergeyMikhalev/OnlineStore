@@ -1,23 +1,23 @@
-package OnlineStore.Services.Implementations;
+package OnlineStore.services.implementations;
 
-import OnlineStore.Entities.Cart;
-import OnlineStore.Entities.Product;
-import OnlineStore.Entities.ProductInCart;
-import OnlineStore.Repositories.CartRepository;
-import OnlineStore.Repositories.ProductRepository;
-import OnlineStore.Services.CartService;
+import OnlineStore.entities.Cart;
+import OnlineStore.entities.Product;
+import OnlineStore.entities.ProductInCart;
+import OnlineStore.repositories.CartRepository;
+import OnlineStore.repositories.ProductRepository;
+import OnlineStore.services.CartService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class CartServiceImp implements CartService {
+public class CartServiceImpl implements CartService {
 
 
     private ProductRepository productRepository;
     private CartRepository cartRepository;
 
     @Autowired
-    public CartServiceImp(ProductRepository productRepository, CartRepository cartRepository) {
+    public CartServiceImpl(ProductRepository productRepository, CartRepository cartRepository) {
         this.productRepository = productRepository;
         this.cartRepository = cartRepository;
     }
@@ -35,24 +35,24 @@ public class CartServiceImp implements CartService {
 
     /**
      *  Функция изменени количества товара в тележке
-     * @param cartId Идентификатор тележки
+     * @param userId Идентификатор тележки
      * @param prodId Идентификатор товара
      * @param count Добавляемое количество товара, может быть как положительным, так и отрицательным.
      *              При этом реализуется функция как добавления так и удаления товара из корзины
      * @return Возвращает объект тележку с уже изменённым количеством товара. Тележка предварительн сохранена в БД
      */
     @Override
-    public Cart alterProductCount(int cartId, int prodId, int count) {
+    public Cart alterProductCount(int userId, int prodId, int count) {
 
-        Cart cart = cartRepository.findOne(cartId);
+        Cart cart = cartRepository.findByUserId(userId);
         if (cart==null) {
-            System.out.println("Тележка с ID=" + cartId + " запрашиваемая для выполнения операции добавления товара не обнаружена");
+            System.out.println("Тележка с ID=" + userId + " запрашиваемая для выполнения операции добавления товара не обнаружена");
             return null;
         }
 
         Product product = productRepository.findOne(prodId);
         if (product==null) {
-            System.out.println("Товар с ID=" + cartId + " запрашиваемый для выполнения операции добавления товара в тележку не обнаружен");
+            System.out.println("Товар с ID=" + userId + " запрашиваемый для выполнения операции добавления товара в тележку не обнаружен");
             return cart;
         }
 
@@ -76,23 +76,23 @@ public class CartServiceImp implements CartService {
 
     /**
      * Удаляет из тележки все имеющиеся единицы товара, идентификатор которого prodId
-     * @param cartId Идентификатор тележки
+     * @param userId Идентификатор тележки
      * @param prodId Идентификатор товара
      * @return Возвращает объект тележку с уже изменённым количеством товара. Тележка предварительн сохранена в БД
      */
     @Override
-    public Cart removeAllSpecificProduct(int cartId, int prodId) {
+    public Cart removeAllSpecificProduct(int userId, int prodId) {
 
 
-        Cart cart = cartRepository.findOne(cartId);
+        Cart cart = cartRepository.findByUserId(userId);
         if (cart==null) {
-            System.out.println("Тележка с ID=" + cartId + " запрашиваемая для выполнения операции добавления товара не обнаружена");
+            System.out.println("Тележка с ID=" + userId + " запрашиваемая для выполнения операции добавления товара не обнаружена");
             return null;
         }
 
         Product product = productRepository.findOne(prodId);
         if (product==null) {
-            System.out.println("Товар с ID=" + cartId + " запрашиваемый для выполнения операции добавления товара в тележку не обнаружен");
+            System.out.println("Товар с ID=" + userId + " запрашиваемый для выполнения операции добавления товара в тележку не обнаружен");
             return cart;
         }
 
@@ -108,15 +108,15 @@ public class CartServiceImp implements CartService {
 
     /**
      *  Очищает тележку - удаляет из неё все имеющиеся товары
-     * @param cartId Идентификатор тележки
+     * @param userId Идентификатор тележки
      * @return Возвращает объект тележку с уже изменённым количеством товара. Тележка предварительн сохранена в БД
      */
     @Override
-    public Cart removeAllProducts(int cartId) {
+    public Cart removeAllProducts(int userId) {
 
-        Cart cart = cartRepository.findOne(cartId);
+        Cart cart = cartRepository.findByUserId(userId);
         if (cart==null) {
-            System.out.println("Тележка с ID=" + cartId + " запрашиваемая для выполнения операции добавления товара не обнаружена");
+            System.out.println("Тележка с ID=" + userId + " запрашиваемая для выполнения операции добавления товара не обнаружена");
             return null;
         }
 
@@ -126,7 +126,12 @@ public class CartServiceImp implements CartService {
         return cart;
     }
 
-//============================= Конец реализации интерфейса CartService ======================
+    @Override
+    public Cart getCartByUserId(int userId) {
+        return cartRepository.findByUserId(userId);
+    }
+
+    //============================= Конец реализации интерфейса CartService ======================
 
 //============================================================================================
 

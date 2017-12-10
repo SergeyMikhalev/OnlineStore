@@ -1,24 +1,25 @@
-package OnlineStore.Services.Implementations;
+package OnlineStore.services.implementations;
 
-import OnlineStore.Entities.Product;
-import OnlineStore.Repositories.ProductRepository;
-import OnlineStore.Services.ProductService;
+import OnlineStore.entities.Product;
+import OnlineStore.repositories.ProductRepository;
+import OnlineStore.services.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ProductServiceORM implements ProductService {
+public class ProductServiceImpl implements ProductService {
 
-    @Autowired
+
     private ProductRepository productRepository;
 
 
-    public ProductServiceORM()
+    public ProductServiceImpl()
     {}
 
-    protected ProductServiceORM(ProductRepository productRepository)
+    @Autowired
+    protected ProductServiceImpl(ProductRepository productRepository)
     {this.productRepository=productRepository;}
 
 

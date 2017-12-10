@@ -1,4 +1,4 @@
-package OnlineStore.Entities;
+package OnlineStore.entities;
 
 import javax.persistence.*;
 

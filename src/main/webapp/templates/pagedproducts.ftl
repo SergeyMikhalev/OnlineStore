@@ -5,6 +5,7 @@
     <title>Таблица товаров</title>
     <#include "parts/part_links.ftl">
     <script src="//ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="test.js"></script>
 </head>
 <body>
 <div class="container">
@@ -33,7 +34,11 @@
                             <img src="${product.getImgPath()}">
                         </#if>
                     </td>
-                    <td> <button class="btn btn-dark"  onclick="addCurrentProductToCart(${product.getId()})"> Добавить в корзину </button> </td>
+                    <td>
+                        <#if canAddToCart >
+                        <button class="btn btn-dark"  onclick="changeProdCnt(1,${product.getId()},1)"> Добавить в корзину </button>
+                        </#if>
+                    </td>
                 </tr>
             </#list>
             </tbody>
@@ -52,20 +57,6 @@
             </#if>
         </div>
     </div>
-
-    <script type="text/javascript">
-        function addCurrentProductToCart(prod_id){
-
-            alert("Добавление товара в корзину")
-            $.ajax({
-                type: "POST",
-                url: "cart",
-                data: JSON.stringify({ command: 1, prodId: prod_id, count: 1 }),
-                contentType: 'application/json',
-                success: null
-            });
-        }
-    </script>
 
 </div>
 

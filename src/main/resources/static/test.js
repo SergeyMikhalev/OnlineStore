@@ -1,13 +1,26 @@
-function showAlert(){
 
-    alert("This is alert popup example");
+
+function changeProdCnt(cmd,prod_id,prod_cnt){
+
+
     $.ajax({
-        type: "POST",
+        type: "PUT",
         url: "cart",
-        data: JSON.stringify({ command: 1, prodId: 1, count: 1 }),
+        data: JSON.stringify({ command: cmd, prodId: prod_id, count: prod_cnt }),
+        dataType: 'text',
         contentType: 'application/json',
-        success: null
-    });
-    alert("Data sent");
+        timeout: 1000,
+        success: some,
+        error: some
 
+    });
+
+
+}
+
+function some(data)
+{
+
+    console.log(data)
+    document.getElementById('cartItems').innerHTML=data
 }

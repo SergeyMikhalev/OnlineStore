@@ -1,4 +1,4 @@
-package OnlineStore.Requests;
+package OnlineStore.requests;
 
 public class CartOpRequest {
 

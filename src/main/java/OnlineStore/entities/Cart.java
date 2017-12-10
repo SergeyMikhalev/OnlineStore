@@ -1,8 +1,7 @@
-package OnlineStore.Entities;
+package OnlineStore.entities;
 
 
 import javax.persistence.*;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 

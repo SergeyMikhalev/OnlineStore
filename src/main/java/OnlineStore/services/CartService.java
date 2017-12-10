@@ -1,6 +1,6 @@
-package OnlineStore.Services;
+package OnlineStore.services;
 
-import OnlineStore.Entities.Cart;
+import OnlineStore.entities.Cart;
 
 
 public interface CartService  {
@@ -19,13 +19,13 @@ public interface CartService  {
 
     /**
      *  Функция изменени количества товара в тележке
-     * @param cartId Идентификатор тележки
+     * @param userId Идентификатор владельца тележки
      * @param prodId Идентификатор товара
      * @param count Добавляемое количество товара, может быть как положительным, так и отрицательным.
      *              При этом реализуется функция как добавления так и удаления товара из корзины
      * @return Возвращает объект тележку с уже изменённым количеством товара. Тележка предварительн сохранена в БД
      */
-    Cart alterProductCount(int cartId, int prodId, int count);
+    Cart alterProductCount(int userId, int prodId, int count);
 
     /**
      *  Получить тележку по идентификатору
@@ -35,17 +35,24 @@ public interface CartService  {
      Cart getCartById(int id);
 
     /**
+     *
+     * @param userId Идентификатор пользователя
+     * @return ВОзвращает тележку пользователя с идентификатором userId
+     */
+     Cart getCartByUserId(int userId);
+
+    /**
      * Удаляет из тележки все имеющиеся единицы товара, идентификатор которого prodId
-     * @param cartId Идентификатор тележки
+     * @param userId Идентификатор владельца тележки
      * @param prodId Идентификатор товара
      * @return Возвращает объект тележку с уже изменённым количеством товара. Тележка предварительн сохранена в БД
      */
-     Cart removeAllSpecificProduct(int cartId, int prodId);
+     Cart removeAllSpecificProduct(int userId, int prodId);
 
     /**
      *  Очищает тележку - удаляет из неё все имеющиеся товары
-     * @param cartId Идентификатор тележки
+     * @param userId Идентификатор владельца тележки
      * @return Возвращает объект тележку с уже изменённым количеством товара. Тележка предварительн сохранена в БД
      */
-     Cart removeAllProducts(int cartId);
+     Cart removeAllProducts(int userId);
 }
