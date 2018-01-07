@@ -36,7 +36,7 @@
                     </td>
                     <td>
                         <#if canAddToCart >
-                        <button class="btn btn-dark"  onclick="changeProdCnt(1,${product.getId()},1)"> Добавить в корзину </button>
+                        <button class="btn btn-dark"  onclick="changeProdCnt(1,${product.getId()},1,alertProductAdded,alertError)"> Добавить в корзину </button>
                         </#if>
                     </td>
                 </tr>

@@ -4,6 +4,7 @@ import OnlineStore.entities.Cart;
 import OnlineStore.entities.Product;
 import OnlineStore.entities.UserRole;
 import OnlineStore.requests.CartOpRequest;
+import OnlineStore.requests.NewProductRequest;
 import OnlineStore.requests.NewUserRequest;
 import OnlineStore.services.CartService;
 import OnlineStore.services.ProductService;
@@ -11,7 +12,7 @@ import OnlineStore.services.ProductService;
 
 import OnlineStore.entities.User;
 import OnlineStore.services.UserRegistrationService;
-import OnlineStore.utils.FreemarkerHelper;
+import OnlineStore.validators.ProductValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -29,7 +30,10 @@ public class ProductController {
     ProductService productService;
     @Autowired
     CartService cartService;
-    //CartRepository cartRepository;
+
+    @Autowired
+    ProductValidator productValidator;
+
 
     @Autowired
     UserRegistrationService userRegistrationService;
@@ -73,11 +77,12 @@ public class ProductController {
     }
 
     @RequestMapping("/cart")
-    public String cart(Model model, @AuthenticationPrincipal User user)
+    public String cart(Model model, @AuthenticationPrincipal User user, @RequestParam(value = "prePurchased", required = false, defaultValue = "false") Boolean prePurchased)
     {
         Cart cart = cartService.getCartByUserId(user.getId());
         System.out.println(cart);
         model.addAttribute("cart", cart);
+        model.addAttribute("prePurchased", prePurchased);
 
         return "cart";
 
@@ -96,10 +101,37 @@ public class ProductController {
     }
 
     @RequestMapping("/addproduct")
-    public String addProduct()
+    public String showAddProdForm()
     {
         return "addproduct";
     }
+
+
+    // Добавление продукта Post запрос
+    @RequestMapping(value = "/addproduct", method = RequestMethod.POST)
+    public String addProduct(Model model,
+                             @RequestParam(name = "prodName", required = false, defaultValue = " ") String prodName,
+                             @RequestParam(name = "prodDesc", required = false, defaultValue = " ") String prodDesc,
+                             @RequestParam(name = "prodCost", required = false, defaultValue = " ") String prodCost
+    )
+    {
+
+        NewProductRequest newProductRequest = new NewProductRequest(prodName,prodDesc,prodCost);
+        List<String> validationErrors = productValidator.validate(newProductRequest);
+
+        if (validationErrors.isEmpty())
+        {
+            System.out.println(prodName+" : "+prodDesc+" : "+prodCost);
+            productService.save(newProductRequest);
+            return "/";
+        }
+        else
+        {
+         model.addAttribute("validationErrors", validationErrors);
+         return "/addproduct";
+        }
+        }
+
 
     @RequestMapping(value = "/registration")
     public String registration() {return "registration";}
@@ -111,9 +143,12 @@ public class ProductController {
                                @RequestParam(name = "passwordConfirmation", required = false, defaultValue = "") String passwordConfirmation)
     {
         System.out.println(username+" : "+password+" : "+passwordConfirmation);
-        List<String> validationErrors = userRegistrationService.validateAndRegister(new NewUserRequest(username, password, passwordConfirmation));
+        NewUserRequest newUserRequest = new NewUserRequest(username, password, passwordConfirmation);
+        List<String> validationErrors = userRegistrationService.validate(newUserRequest);
 
         if (validationErrors.isEmpty()) {
+            User registeredUser= userRegistrationService.register(newUserRequest);
+            userRegistrationService.autologin(registeredUser, newUserRequest.getPassword());
             return "index";
         }
         else {
@@ -123,8 +158,8 @@ public class ProductController {
         }
     }
 
-    @RequestMapping(value ="/cart",method = RequestMethod.PUT, consumes = "application/json", produces = "plain/text")
-    public @ResponseBody String cartOp(Model model,@AuthenticationPrincipal User user, @RequestBody CartOpRequest request)
+    @RequestMapping(value ="/cart",method = RequestMethod.PUT, consumes = "application/json")
+    public String cartOp(Model model,@AuthenticationPrincipal User user, @RequestBody CartOpRequest request)
     {
         System.out.println("----------------------");
 
@@ -142,11 +177,26 @@ public class ProductController {
 
         model.addAttribute("cart",cart);
 
-        String s = FreemarkerHelper.getStringFromTemplate("cart_items_table.ftl",model);
 
-        System.out.println(s);
+        return "cart_items_table";
+    }
 
-        return s;
+    @RequestMapping(value = "/purchase", method = RequestMethod.POST)
+    public String purchase(Model model,
+                           @AuthenticationPrincipal User user,
+                           @RequestParam(name = "deliveryAddress") String deliveryAddress)
+    {
+        if (user==null)
+        {
+            return "redirect:/login";
+        }
+        else {
+            Cart cart = cartService.getCartByUserId(user.getId());
+            cartService.purchaseCart(cart.getId(),deliveryAddress);
+            cartService.attachNewCartToUser(user.getId());
+            return "redirect:/";
+        }
+
     }
 
 }

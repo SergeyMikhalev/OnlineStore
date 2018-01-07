@@ -44,7 +44,7 @@ public class CartServiceImpl implements CartService {
     @Override
     public Cart alterProductCount(int userId, int prodId, int count) {
 
-        Cart cart = cartRepository.findByUserId(userId);
+        Cart cart = cartRepository.findByUserIdAndPurchasedFalse(userId);
         if (cart==null) {
             System.out.println("Тележка с ID=" + userId + " запрашиваемая для выполнения операции добавления товара не обнаружена");
             return null;
@@ -84,7 +84,7 @@ public class CartServiceImpl implements CartService {
     public Cart removeAllSpecificProduct(int userId, int prodId) {
 
 
-        Cart cart = cartRepository.findByUserId(userId);
+        Cart cart = cartRepository.findByUserIdAndPurchasedFalse(userId);
         if (cart==null) {
             System.out.println("Тележка с ID=" + userId + " запрашиваемая для выполнения операции добавления товара не обнаружена");
             return null;
@@ -114,7 +114,7 @@ public class CartServiceImpl implements CartService {
     @Override
     public Cart removeAllProducts(int userId) {
 
-        Cart cart = cartRepository.findByUserId(userId);
+        Cart cart = cartRepository.findByUserIdAndPurchasedFalse(userId);
         if (cart==null) {
             System.out.println("Тележка с ID=" + userId + " запрашиваемая для выполнения операции добавления товара не обнаружена");
             return null;
@@ -128,7 +128,7 @@ public class CartServiceImpl implements CartService {
 
     @Override
     public Cart getCartByUserId(int userId) {
-        return cartRepository.findByUserId(userId);
+        return cartRepository.findByUserIdAndPurchasedFalse(userId);
     }
 
     //============================= Конец реализации интерфейса CartService ======================
@@ -189,5 +189,21 @@ public class CartServiceImpl implements CartService {
         return  tartgetProductInCart;
     }
 
+    /**
+     *  Создаёт для пользователя новую корзину
+     *  используется для автоматического прикрепления новой корзины
+     *  к вновь зарегистрированному пользователи или
+     *  при покупке\заказе корзины
+     * @param userId идентификатор пользователя, к которому прикрепляется новая корзина
+     */
+    @Override
+    public void attachNewCartToUser(int userId) {
+        Cart newUsersCart = new Cart(userId);
+        cartRepository.saveAndFlush(newUsersCart);
+    }
 
+    @Override
+    public void purchaseCart(int cartId, String deliveryAddress) {
+        cartRepository.purchaseCart(cartId,deliveryAddress);
+    }
 }

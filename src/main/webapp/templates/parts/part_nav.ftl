@@ -5,5 +5,5 @@
     <a class="btn btn-dark" href="/addproduct"> Добавить товар </a>
     <a class="btn btn-dark" href="/login"> Войти </a>
     <a class="btn btn-dark" href="/registration"> Зарегестрироваться </a>
-
+    <a class="btn btn-dark" href="/logout"> Выйти </a>
 </div>

@@ -7,8 +7,13 @@ import OnlineStore.repositories.CartRepository;
 import OnlineStore.repositories.RoleRepository;
 import OnlineStore.repositories.UserRepository;
 import OnlineStore.requests.NewUserRequest;
+import OnlineStore.services.CartService;
 import OnlineStore.services.UserRegistrationService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -21,27 +26,26 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
 
     private UserRepository userRepository;
     private RoleRepository roleRepository;
-    private CartRepository cartRepository;
+    private CartService cartService;
 
     @Autowired
-    public UserRegistrationServiceImpl(UserRepository userRepository, RoleRepository roleRepository, CartRepository cartRepository) {
+    private BCryptPasswordEncoder bCryptPasswordEncoder;
+
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    public UserRegistrationServiceImpl(UserRepository userRepository,
+                                       RoleRepository roleRepository,
+                                       CartService cartService,
+                                       AuthenticationManager authenticationManager) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
-        this.cartRepository = cartRepository;
+        this.cartService = cartService;
+        this.authenticationManager = authenticationManager;
     }
 
 
-
-    @Override
-    public List<String> validateAndRegister(NewUserRequest newUser) {
-        List<String> validationErrors = validate(newUser);
-        if (validationErrors.isEmpty())
-        {register(newUser);}
-
-        return validationErrors;
-    }
-
-    private List<String> validate(NewUserRequest newUser) {
+    public List<String> validate(NewUserRequest newUser) {
         List<String> validationErrors = new ArrayList<>();
 
         //Несовподение паролей
@@ -58,17 +62,35 @@ public class UserRegistrationServiceImpl implements UserRegistrationService {
         return validationErrors;
     }
 
-    private void register(NewUserRequest newUser)
+    @Override
+    public User register(NewUserRequest newUserRequest)
     {
         UserRole roleBuyer = roleRepository.findByRolename("Buyer");
         Set<UserRole> roles = new HashSet<>();
         roles.add(roleBuyer);
 
-        User newUserEntity = new User(newUser.getUsername(), newUser.getPassword(), roles);
+        User newUserEntity = new User(newUserRequest.getUsername(), bCryptPasswordEncoder.encode(newUserRequest.getPassword()), roles);
         newUserEntity =  userRepository.saveAndFlush(newUserEntity);
 
-        Cart newUsersCart = new Cart(0,newUserEntity.getId(),false, null);
-        cartRepository.saveAndFlush(newUsersCart);
 
+        cartService.attachNewCartToUser(newUserEntity.getId());
+        //Cart newUsersCart = new Cart(newUserEntity.getId());
+        //cartRepository.saveAndFlush(newUsersCart);
+
+        return newUserEntity;
+    }
+
+    @Override
+    public void autologin(User user, String notEncryptedPassword)
+    {
+        //UsernamePasswordAuthenticationToken authToken  = new UsernamePasswordAuthenticationToken(user, user.getPassword() ,user.getAuthorities());
+        UsernamePasswordAuthenticationToken authToken  = new UsernamePasswordAuthenticationToken(user, notEncryptedPassword ,user.getAuthorities());
+        authenticationManager.authenticate(authToken);
+
+        if (authToken.isAuthenticated())
+        {
+            SecurityContextHolder.getContext().setAuthentication(authToken);
+            System.out.println("Автологин пользователя - "+user.getUsername()+" выполнен");
+        }
     }
 }

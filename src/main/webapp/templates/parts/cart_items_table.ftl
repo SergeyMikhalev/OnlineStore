@@ -18,9 +18,9 @@
 
         <td>
             <div class = btn-group >
-                <button class="btn btn-dark" onclick="changeProdCnt(1,${item.getProduct().getId()},1)"> +1 </button>
-                <button class="btn btn-dark" onclick="changeProdCnt(1,${item.getProduct().getId()},-1)"> -1 </button>
-                <button class="btn btn-dark" onclick="changeProdCnt(2,${item.getProduct().getId()},0)"> -All </button>
+                <button class="btn btn-dark" onclick="changeProdCnt(1,${item.getProduct().getId()},1,insertUpdatedCartTable,alertError)"> +1 </button>
+                <button class="btn btn-dark" onclick="changeProdCnt(1,${item.getProduct().getId()},-1,insertUpdatedCartTable,alertError)"> -1 </button>
+                <button class="btn btn-dark" onclick="changeProdCnt(2,${item.getProduct().getId()},0,insertUpdatedCartTable,alertError)"> -All </button>
             </div>
         </td>
     </tr>

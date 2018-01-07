@@ -7,7 +7,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "Carts")
-public class Cart {
+public class Cart{
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -17,8 +18,8 @@ public class Cart {
     @Column(name = "cartUser")
     private int userId;
 
-    @Column(name = "isOrdered")
-    private boolean isOrdered;
+    @Column(name = "Purchased")
+    private boolean purchased;
 
     @Column(name = "deliveryAddress")
     private String deliveryAddress;
@@ -44,12 +45,12 @@ public class Cart {
         this.userId = userId;
     }
 
-    public boolean isOrdered() {
-        return isOrdered;
+    public boolean isPurchased() {
+        return purchased;
     }
 
-    public void setOrdered(boolean ordered) {
-        isOrdered = ordered;
+    public void setPurchased(boolean purchased) {
+        this.purchased = purchased;
     }
 
     public String getDeliveryAddress() {
@@ -71,11 +72,15 @@ public class Cart {
     //==========================================================
 
 
-    public Cart(int id, int userId, boolean isOrdered, String deliveryAddress) {
+    public Cart(int id, int userId, boolean purchased, String deliveryAddress) {
         this.id = id;
         this.userId = userId;
-        this.isOrdered = isOrdered;
+        this.purchased = purchased;
         this.deliveryAddress = deliveryAddress;
+    }
+
+    public Cart(int userId) {
+        this.userId = userId;
     }
 
     public Cart() {
@@ -89,7 +94,7 @@ public class Cart {
         return "Cart{" +
                 "id=" + id +
                 ", userId=" + userId +
-                ", isOrdered=" + isOrdered +
+                ", purchased=" + purchased +
                 ", deliveryAddress='" + deliveryAddress + '\'' +
                  ", items=" + items +
                 '}';
@@ -112,4 +117,8 @@ public class Cart {
     public int hashCode() {
         return id;
     }
+
+
+
+
 }
